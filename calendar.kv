@@ -1,0 +1,86 @@
+<CalendarLayout>:
+    orientation: 'vertical'
+
+    BoxLayout:
+        height: 20  # 고정된 높이 설정
+        size_hint_y: 0.1
+        orientation: 'horizontal'
+
+        Button:
+            text: '<'
+            size_hint_x: 0.2
+            on_press: root.go_to_previous_month()
+
+        Label:
+            text: f"{root.year}년 {root.month}월"  # 이제 root.year와 root.month가 NumericProperty로 참조 가능
+            size_hint_x: 0.6
+            font_name: 'NanumGothic.ttf'
+
+        Button:
+            text: '>'
+            size_hint_x: 0.2
+            on_press: root.go_to_next_month()
+
+    GridLayout:
+        id: calendar_grid  # id로 calendar_grid를 지정
+        cols: 7
+        rows: 7
+        size_hint_y: 0.9
+        spacing: 2
+
+
+    
+# Popup 레이아웃
+<EventPopup>:
+    orientation: 'vertical'
+    spacing: 10
+
+    Label:
+        text: f"선택한 날짜: {root.current_date}"
+        font_name: 'NanumGothic'
+        size_hint_y: None
+        height: 30
+
+    ScrollView:
+        size_hint: 1, None
+        size: 400, 300
+        GridLayout:
+            cols: 1
+            padding: [10, 0, 10, 0]
+            spacing: 10
+            size_hint_y: None
+            height: self.minimum_height  # 동적 높이 설정
+
+            # 기존 일정 목록 (여기에 동적으로 추가)
+            Label:
+                text: '일정 없음'
+                font_name: 'NanumGothic'
+
+    TextInput:
+        id: title_input  # id를 통해 이 값을 팝업에서 가져옵니다
+        hint_text: '새 일정 제목'
+        font_name: 'NanumGothic'
+        size_hint_y: None
+        height: 60
+
+    TextInput:
+        id: value_input  # id를 통해 이 값을 팝업에서 가져옵니다
+        hint_text: '새 일정 내용'
+        font_name: 'NanumGothic'
+        size_hint_y: None
+        height: 60
+
+    Button:
+        text: "등록"
+        font_name: 'NanumGothic'
+        size_hint_y: None
+        height: 40
+        on_press: root.submit_event(title_input.text, value_input.text, root.current_date)
+
+    Button:
+        text: "닫기"
+        font_name: 'NanumGothic'
+        size_hint_y: None
+        height: 40
+    
+        on_press: self.parent.parent.dismiss()
