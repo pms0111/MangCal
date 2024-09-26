@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.properties import NumericProperty
+from kivy.uix.popup import Popup
 from supabase import Client
 import supabase_helper
 
@@ -155,8 +156,28 @@ class CalendarLayout(BoxLayout):
 
 
     def show_event_popup(self, instance, month):
-        """선택한 날짜와 일정을 보여주는 팝업 처리"""
-        logging.info(f"선택한 날짜: {instance.text}, 월: {month}, 연도: {self.year}")  # 선택된 날짜 로그
+        # instance.text에서 일자 부분만 추출하여 두 글자까지 자름
+        selected_day_str = instance.text.split("\n")[0][:2].strip()  # 버튼 텍스트의 첫 번째 줄만 두 글자로 자름
+        selected_day = int(selected_day_str)  # int로 변환하여 날짜로 사용
+
+        # 선택된 날짜를 기반으로 포맷
+        selected_date = datetime(self.year, month, selected_day)
+        formatted_date = selected_date.strftime("%Y-%m-%d")
+
+        logging.info(formatted_date)
+
+        # 팝업 내용 설정
+        popup_content = EventPopup()
+        popup_content.ids.date_label.text = f"선택한 날짜: {formatted_date}"
+
+        # 팝업 객체 생성 및 팝업을 content에 설정
+        popup = Popup(title="", content=popup_content, size_hint=(0.8, 0.6))
+
+        # 팝업 객체를 EventPopup에 전달
+        popup_content.set_popup(popup)
+
+        # 팝업 열기
+        popup.open()
 
     def go_to_next_month(self):
         """다음 달로 이동"""
@@ -177,6 +198,18 @@ class CalendarLayout(BoxLayout):
             self.month -= 1
         logging.info(f"이전 달로 이동: {self.year}-{self.month}")  # 이전 달 이동 로그
         self.update_calendar()
+
+class EventPopup(BoxLayout):
+    popup = None  # Popup 객체를 저장할 속성
+
+    def set_popup(self, popup_instance):
+        """Popup 객체를 저장"""
+        self.popup = popup_instance
+
+    def submit_event(self, title, content):
+        print(f"일정 제목: {title}, 내용: {content}")
+        if self.popup:
+            self.popup.dismiss()  # 팝업 창 닫기
 
 class CalendarApp(App):
     def build(self):

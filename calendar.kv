@@ -2,24 +2,83 @@
     orientation: 'vertical'
 
     BoxLayout:
-        height: 20  # 고정된 높이 설정
         size_hint_y: 0.1
-        orientation: 'horizontal'
+        height: 40  # 고정된 높이 설정
+        spacing: 10
 
-        Button:
-            text: '<'
-            size_hint_x: 0.2
-            on_press: root.go_to_previous_month()
-
-        Label:
-            text: f"{root.year}년 {root.month}월"  # 이제 root.year와 root.month가 NumericProperty로 참조 가능
+        BoxLayout:
+            orientation: 'horizontal'
             size_hint_x: 0.6
-            font_name: 'NanumGothic.ttf'
+            padding: [0, 0, 10, 0]
 
-        Button:
-            text: '>'
-            size_hint_x: 0.2
-            on_press: root.go_to_next_month()
+            Label:
+                text: f"{root.year}년 {root.month}월"  # root.year와 root.month가 NumericProperty로 참조 가능
+                font_name: 'NanumGothic.ttf'
+                size_hint_x: 0.6  # 전체 레이아웃에서 레이블이 차지하는 비율
+
+            Widget:
+                width: 50
+
+            # 새로고침 버튼
+            Button:
+                size_hint: None, None
+                pos_hint: {'center_y': 0.5}  # 버튼의 Y 위치를 중앙으로 조정
+                size: 50, 50
+                background_color: 0, 0, 0, 0
+                on_press: root.refresh_calendar()  # 새로고침 버튼 클릭 시 이벤트 처리
+
+                # 버튼을 동그랗게 그리기
+                canvas.before:
+                    Color:
+                        rgba: 0.5, 0.5, 0.5, 1  # 버튼의 배경 색상 (회색)
+                    Ellipse:
+                        pos: self.pos
+                        size: self.size
+
+                # 이미지 위젯을 버튼 안에 추가
+                Image:
+                    source: 'refresh_btn.png'  # PNG 파일 경로 설정
+                    size_hint: None, None
+                    size: 80, 80  # 이미지 크기
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            # 글로벌 색상 버튼
+            Button:
+                size_hint: None, None
+                pos_hint: {'center_y': 0.5}  # 버튼의 Y 위치를 중앙으로 조정
+                size: 50, 50
+                background_color: 0, 0, 0, 0
+                on_press: root.setGlobalColor()  # 새로고침 버튼 클릭 시 이벤트 처리
+
+                # 버튼을 동그랗게 그리기
+                canvas.before:
+                    Color:
+                        rgba: 0.5, 0.5, 0.5, 1  # 버튼의 배경 색상 (회색)
+                    Ellipse:
+                        pos: self.pos
+                        size: self.size
+
+                # 이미지 위젯을 버튼 안에 추가
+                Image:
+                    source: 'palette_btn.png'  # PNG 파일 경로 설정
+                    size_hint: None, None
+                    size: 80, 80  # 이미지 크기
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+        BoxLayout: 
+            size_hint_x: 0.1
+
+            Button:
+                text: '<'
+                size_hint_x: 0.5
+                on_press: root.go_to_previous_month()
+
+            Button:
+                text: '>'
+                size_hint_x: 0.5
+                on_press: root.go_to_next_month()
 
     GridLayout:
         id: calendar_grid  # id로 calendar_grid를 지정
@@ -30,57 +89,43 @@
 
 
     
-# Popup 레이아웃
+# 팝업 레이아웃 정의
 <EventPopup>:
-    orientation: 'vertical'
-    spacing: 10
+    font_name: 'NanumGothic.ttf'
+    title: ""  # 제목을 비워서 숨기기
+    auto_dismiss: False  # 외부 클릭으로 팝업 닫히지 않게 설정
 
-    Label:
-        text: f"선택한 날짜: {root.current_date}"
-        font_name: 'NanumGothic'
-        size_hint_y: None
-        height: 30
+    BoxLayout:
+        orientation: 'vertical'  # 세로 방향으로 정렬
+        padding: 10
+        spacing: 20
 
-    ScrollView:
-        size_hint: 1, None
-        size: 400, 300
-        GridLayout:
-            cols: 1
-            padding: [10, 0, 10, 0]
-            spacing: 10
+        Label:
+            id: date_label
+            text: "선택한 날짜: "
+            font_name: 'NanumGothic.ttf'
             size_hint_y: None
-            height: self.minimum_height  # 동적 높이 설정
+            height: 30
 
-            # 기존 일정 목록 (여기에 동적으로 추가)
-            Label:
-                text: '일정 없음'
-                font_name: 'NanumGothic'
+        TextInput:
+            id: content_input
+            hint_text: '일정 내용 입력'
+            font_name: 'NanumGothic.ttf'
+            size_hint_y: 1
+            multiline: True
+            padding: 10
 
-    TextInput:
-        id: title_input  # id를 통해 이 값을 팝업에서 가져옵니다
-        hint_text: '새 일정 제목'
-        font_name: 'NanumGothic'
-        size_hint_y: None
-        height: 60
+        BoxLayout:
+            size_hint_y: None
+            height: 40
+            spacing: 10
 
-    TextInput:
-        id: value_input  # id를 통해 이 값을 팝업에서 가져옵니다
-        hint_text: '새 일정 내용'
-        font_name: 'NanumGothic'
-        size_hint_y: None
-        height: 60
+            Button:
+                text: "등록"
+                on_press: root.submit_event(title_input.text, content_input.text)
+                font_name: 'NanumGothic.ttf'
 
-    Button:
-        text: "등록"
-        font_name: 'NanumGothic'
-        size_hint_y: None
-        height: 40
-        on_press: root.submit_event(title_input.text, value_input.text, root.current_date)
-
-    Button:
-        text: "닫기"
-        font_name: 'NanumGothic'
-        size_hint_y: None
-        height: 40
-    
-        on_press: self.parent.parent.dismiss()
+            Button:
+                text: "닫기"
+                on_press: root.popup.dismiss()
+                font_name: 'NanumGothic.ttf'
