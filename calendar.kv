@@ -12,7 +12,7 @@
             padding: [0, 0, 10, 0]
 
             Label:
-                text: f"{root.year}년 {root.month}월"  # root.year와 root.month가 NumericProperty로 참조 가능
+                text: f"{root.year}년 {root.month}월 {root.day}일"  # root.year와 root.month가 NumericProperty로 참조 가능
                 font_name: 'NanumGothic.ttf'
                 size_hint_x: 0.6  # 전체 레이아웃에서 레이블이 차지하는 비율
 
@@ -54,7 +54,7 @@
                     pos_hint: {'center_y': 0.5}  # 버튼의 Y 위치를 중앙으로 조정
                     size: 70, 70
                     background_color: 0, 0, 0, 0
-                    on_press: root.setGlobalColor()  # 새로고침 버튼 클릭 시 이벤트 처리
+                    on_press: root.setGlobalColor()  # 메서드 호출
 
                     # 버튼을 동그랗게 그리기
                     canvas.before:
