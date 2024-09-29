@@ -188,7 +188,7 @@ class CalendarLayout(BoxLayout):
                 logging.info(f"{date_str}에 다음 달 일정 없음")  # 일정 없음 로그
 
             # 다음 달 버튼 채도 낮춘 색상 적용
-            darker_color = [c * 0.8 for c in self.selected_color[:3]] + [1]
+            darker_color = [c * 0.7 for c in self.selected_color[:3]] + [1]
 
             btn = Button(
                 text=event_text,
