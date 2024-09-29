@@ -159,7 +159,7 @@ class CalendarLayout(BoxLayout):
                 logging.info(f"{date_str}에 일정 없음")  # 일정 없음 로그
 
             btn = Button(
-                text=str(day),
+                text=event_text,
                 font_size='18',
                 halign='left',
                 valign='top',
